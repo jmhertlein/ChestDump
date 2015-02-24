@@ -1,0 +1,12 @@
+/build/
+/dist/
+/nbproject/private/
+/manifest.mf
+build.xml
+.classpath
+.project
+nbproject
+/target/
+.settings
+dependency-reduced-pom.xml
+/.tags
