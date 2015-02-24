@@ -18,10 +18,10 @@ Install WorldEdit. Then install ChestDump.
 
 # Commands
 
-`/cdump start` - start a new dump
-`/cdump stop` - stop an in-progress dump
-`/cdump inspect <index>` - view the inventory of a chest found by the dump
-`/cdump tp <index>` - teleport to the specified chest
+* `/cdump start` - start a new dump
+* `/cdump stop` - stop an in-progress dump
+* `/cdump inspect <index>` - view the inventory of a chest found by the dump
+* `/cdump tp <index>` - teleport to the specified chest
 
 # License
 
