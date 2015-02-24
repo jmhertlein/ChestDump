@@ -28,7 +28,6 @@ import net.jmhertlein.reflective.annotation.CommandMethod;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Chest;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
@@ -36,7 +35,7 @@ import org.bukkit.entity.Player;
  * @author joshua
  */
 public class ChestDumpCommandDefinition implements CommandDefinition {
-    private final ChestDumpPlugin p;
+    private final ChestDumpPlugin plugin;
     private final WorldEditPlugin wep;
     private final Map<OfflinePlayer, List<Location>> dumps;
     private final Map<OfflinePlayer, ChestDumpTask> dumpers;
@@ -45,73 +44,71 @@ public class ChestDumpCommandDefinition implements CommandDefinition {
         wep = (WorldEditPlugin) p.getServer().getPluginManager().getPlugin("WorldEdit");
         dumps = new HashMap<>();
         dumpers = new HashMap<>();
-        this.p = p;
+        this.plugin = p;
     }
 
     @CommandMethod(path = "cdump start", permNode = "cdump.dump")
-    public void dumpChests(CommandSender s, String[] args) {
-        beginDump(s);
+    public void dumpChests(Player p, String[] args) {
+        beginDump(p);
     }
 
-    @CommandMethod(path = "cdump inspect", permNode = "cdump.dump",
-                   requiredArgs = 1, helpMsg = "Usage: /cdump inspect <id>")
-    public void inspectChest(CommandSender s, int chestIndex) {
-        inspectChest(s, chestIndex, false);
+    @CommandMethod(path = "cdump inspect", permNode = "cdump.dump", requiredArgs = 1, helpMsg = "Usage: /cdump inspect <id>")
+    public void inspectChest(Player p, Integer chestIndex) {
+        inspectChest(p, chestIndex, false);
     }
 
-    @CommandMethod(path = "cdump tp", permNode = "cdump.dump",
-                   requiredArgs = 1, helpMsg = "Usage: /cdump tp <id>")
-    public void tpAndInspectChest(CommandSender s, int chestIndex) {
-        inspectChest(s, chestIndex, true);
+    @CommandMethod(path = "cdump tp", permNode = "cdump.dump", requiredArgs = 1, helpMsg = "Usage: /cdump tp <id>")
+    public void tpAndInspectChest(Player p, Integer chestIndex) {
+        inspectChest(p, chestIndex, true);
     }
 
     @CommandMethod(path = "cdump stop", permNode = "cdump.dump")
-    public void stopDump(CommandSender s) {
-        if(dumpers.containsKey((Player) s)) {
-            dumpers.remove((Player) s).cancel();
-            s.sendMessage("Dump cancelled.");
+    public void stopDump(Player p) {
+        if(dumpers.containsKey(p)) {
+            dumpers.remove(p).cancel();
+            p.sendMessage("Dump cancelled.");
         } else {
-            s.sendMessage("You're not currently running cdump.");
+            p.sendMessage("You're not currently running cdump.");
         }
     }
 
-    private void beginDump(CommandSender s) {
-        if(dumpers.containsKey((Player) s)) {
-            s.sendMessage("You're already running cdump. Use \"/cdump stop\" if you want to abort.");
+    private void beginDump(Player p) {
+        if(dumpers.containsKey(p)) {
+            p.sendMessage("You're already running cdump. Use \"/cdump stop\" if you want to abort.");
             return;
         }
 
-        Selection sel = wep.getSelection((Player) s);
+        Selection sel = wep.getSelection(p);
         if(sel == null) {
-            s.sendMessage("You don't have a WorldEdit selection.");
+            p.sendMessage("You don't have a WorldEdit selection.");
             return;
         }
         Region r;
         try {
             r = sel.getRegionSelector().getRegion();
         } catch(IncompleteRegionException ex) {
-            s.sendMessage("Incomplete region: " + ex.getLocalizedMessage());
+            p.sendMessage("Incomplete region: " + ex.getLocalizedMessage());
             return;
         }
 
-        ChestDumpTask t = new ChestDumpTask(dumps, (Player) s, r.getWorld(), r.getArea(), r.iterator());
-        t.runTaskTimer(p, 0, 1);
-        dumpers.put((Player) s, t);
+        ChestDumpTask t = new ChestDumpTask(dumps, p, r.getWorld(), r.getArea(), r.iterator());
+        t.runTaskTimer(plugin, 0, 1);
+        dumpers.put(p, t);
     }
 
-    private void inspectChest(CommandSender s, int chestIndex, boolean tp) {
+    private void inspectChest(Player p, int chestIndex, boolean tp) {
         List<Location> chests;
         //lots of boring input validation below
         {
-            if(dumps.containsKey((OfflinePlayer) s))
-                chests = dumps.get((OfflinePlayer) s);
+            if(dumps.containsKey(p))
+                chests = dumps.get(p);
             else {
-                s.sendMessage("Error: No dump to inspect. Prepare a dump with /cdump start.");
+                p.sendMessage("Error: No dump to inspect. Prepare a dump with /cdump start.");
                 return;
             }
 
             if(chestIndex < 0 || chestIndex >= chests.size()) {
-                s.sendMessage(String.format("Error: index %s is out of range! Range is: [0,%s].", chestIndex, chests.size() - 1));
+                p.sendMessage(String.format("Error: index %s is out of range! Range is: [0,%s].", chestIndex, chests.size() - 1));
                 return;
             }
         }
@@ -123,11 +120,11 @@ public class ChestDumpCommandDefinition implements CommandDefinition {
 
         if(tp) {
             Location tpLoc = l.add(0, 2, 0);
-            ((Player) s).teleport(tpLoc);
+            p.teleport(tpLoc);
         }
 
-        s.sendMessage("Viewing chest at: " + formatLoc(l));
-        ((Player) s).openInventory(c.getBlockInventory());
+        p.sendMessage("Viewing chest at: " + formatLoc(l));
+        p.openInventory(c.getBlockInventory());
     }
 
     private static String formatLoc(Location l) {
