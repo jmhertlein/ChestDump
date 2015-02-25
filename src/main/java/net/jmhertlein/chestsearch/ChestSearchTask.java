@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jmhertlein.chestdump;
+package net.jmhertlein.chestsearch;
 
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.blocks.BaseBlock;
@@ -35,11 +35,11 @@ import org.bukkit.scheduler.BukkitRunnable;
  *
  * @author joshua
  */
-public class ChestDumpTask extends BukkitRunnable {
+public class ChestSearchTask extends BukkitRunnable {
     private final NumberFormat formatter = new DecimalFormat("#0.00");
     private final int BLOCKS_PER_PASS = 200000;
     private final int SECONDS_PER_MESSAGE = 7;
-    private final Map<OfflinePlayer, List<Location>> dumps;
+    private final Map<OfflinePlayer, List<Location>> searches;
     private final Player p;
     private final Iterator<BlockVector> i;
     private final List<Location> chests;
@@ -48,13 +48,13 @@ public class ChestDumpTask extends BukkitRunnable {
     private int totalProgress;
     private final int totalSize;
 
-    public ChestDumpTask(Map<OfflinePlayer, List<Location>> dumps, Player p, World w, int totalSize, Iterator<BlockVector> i) {
-        this.dumps = dumps;
+    public ChestSearchTask(Map<OfflinePlayer, List<Location>> searches, Player p, World w, int totalSize, Iterator<BlockVector> i) {
+        this.searches = searches;
         this.p = p;
         this.i = i;
         this.chests = new ArrayList<>();
         this.w = w;
-        p.sendMessage("Starting cdump...");
+        p.sendMessage("Starting csearch...");
         lastMessageTime = System.currentTimeMillis();
         this.totalSize = totalSize;
         this.totalProgress = 0;
@@ -91,7 +91,7 @@ public class ChestDumpTask extends BukkitRunnable {
 
         if(!i.hasNext()) {
             cancel();
-            dumps.put(p, chests);
+            searches.put(p, chests);
             p.sendMessage("Ready to inspect " + chests.size() + " chests. Ids are in range: [0," + (chests.size() - 1) + "].");
         }
 

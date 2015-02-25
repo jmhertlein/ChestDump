@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jmhertlein.chestdump;
+package net.jmhertlein.chestsearch;
 
 import net.jmhertlein.reflective.TreeCommandExecutor;
 import net.jmhertlein.reflective.TreeTabCompleter;
@@ -24,7 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  *
  * @author joshua
  */
-public class ChestDumpPlugin extends JavaPlugin {
+public class ChestSearchPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
@@ -34,9 +34,9 @@ public class ChestDumpPlugin extends JavaPlugin {
     private void setupCommands() {
         TreeCommandExecutor e = new TreeCommandExecutor();
         TreeTabCompleter c = new TreeTabCompleter(e);
-        e.add(new ChestDumpCommandDefinition(this));
+        e.add(new ChestSearchCommandDefinition(this));
 
-        for(String s : new String[]{"cdump"}) {
+        for(String s : new String[]{"csearch"}) {
             getServer().getPluginCommand(s).setExecutor(e);
             getServer().getPluginCommand(s).setTabCompleter(c);
         }

@@ -1,28 +1,28 @@
-ChestDump is an admin tool for finding chests within a WorldEdit selection. ChestDump can handle *really* big worldedit selections (on the order of a billion+ blocks) just fine (though it may take a little bit).
+ChestSearch is an admin tool for finding chests within a WorldEdit selection. ChestSearch can handle *really* big worldedit selections (on the order of a billion+ blocks) just fine (though it may take a little bit).
 
 # Installation
 
-Install WorldEdit. Then install ChestDump.
+Install WorldEdit. Then install ChestSearch.
 
 # Permission
 
-`cdump.dump` - permission for all cdump commands
+`csearch.search` - permission for all csearch commands
 
 # Usage
 
 1. Make a WorldEdit selection
-2. Type /cdump start
+2. Type /csearch start
 3. Wait for it to complete (you will get an ETA and updates intermittently)
-4. When it's done, type `/cdump inspect <index>` where `<index>` is a non-negative integer in the range reported by the command upon complection of the dump.
-5. Alternatively, use `/cdump tp <index>` to tp to the chest.
+4. When it's done, type `/csearch inspect <index>` where `<index>` is a non-negative integer in the range reported by the command upon completion of the search.
+5. Alternatively, use `/csearch tp <index>` to tp to the chest.
 
 # Commands
 
-* `/cdump start` - start a new dump
-* `/cdump stop` - stop an in-progress dump
-* `/cdump inspect <index>` - view the inventory of a chest found by the dump
-* `/cdump tp <index>` - teleport to the specified chest
+* `/csearch start` - start a new search
+* `/csearch stop` - stop an in-progress search
+* `/csearch inspect <index>` - view the inventory of a chest found by the search 
+* `/csearch tp <index>` - teleport to the specified chest
 
 # License
 
-ChestDump is available under the GNU GPLv3+.
+ChestSearch is available under the GNU GPLv3+.

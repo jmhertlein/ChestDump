@@ -1,9 +1,9 @@
-name: ChestDump
-main: net.jmhertlein.chestdump.ChestDumpPlugin
+name: ChestSearch
+main: net.jmhertlein.chestsearch.ChestSearchPlugin
 version: ${version}-${buildNumber}
 softdepend: [WorldEdit]
 commands:
-    cdump:
-        description: Dumps contents of all chests in WE selection
-        usage: /cdump [id]
-        aliases: [cd]
+    csearch:
+        description: Finds all chests in WE selection
+        usage: /csearch [start|stop|inspect|tp]
+        aliases: [cs]

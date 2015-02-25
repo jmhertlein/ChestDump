@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jmhertlein.chestdump;
+package net.jmhertlein.chestsearch;
 
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
@@ -34,47 +34,47 @@ import org.bukkit.entity.Player;
  *
  * @author joshua
  */
-public class ChestDumpCommandDefinition implements CommandDefinition {
-    private final ChestDumpPlugin plugin;
+public class ChestSearchCommandDefinition implements CommandDefinition {
+    private final ChestSearchPlugin plugin;
     private final WorldEditPlugin wep;
-    private final Map<OfflinePlayer, List<Location>> dumps;
-    private final Map<OfflinePlayer, ChestDumpTask> dumpers;
+    private final Map<OfflinePlayer, List<Location>> searches;
+    private final Map<OfflinePlayer, ChestSearchTask> searchers;
 
-    public ChestDumpCommandDefinition(ChestDumpPlugin p) {
+    public ChestSearchCommandDefinition(ChestSearchPlugin p) {
         wep = (WorldEditPlugin) p.getServer().getPluginManager().getPlugin("WorldEdit");
-        dumps = new HashMap<>();
-        dumpers = new HashMap<>();
+        searches = new HashMap<>();
+        searchers = new HashMap<>();
         this.plugin = p;
     }
 
-    @CommandMethod(path = "cdump start", permNode = "cdump.dump")
-    public void dumpChests(Player p, String[] args) {
-        beginDump(p);
+    @CommandMethod(path = "csearch start", permNode = "csearch.search")
+    public void searchChests(Player p, String[] args) {
+        beginSearch(p);
     }
 
-    @CommandMethod(path = "cdump inspect", permNode = "cdump.dump", requiredArgs = 1, helpMsg = "Usage: /cdump inspect <id>")
+    @CommandMethod(path = "csearch inspect", permNode = "csearch.csearch", requiredArgs = 1, helpMsg = "Usage: /csearch inspect <id>")
     public void inspectChest(Player p, Integer chestIndex) {
         inspectChest(p, chestIndex, false);
     }
 
-    @CommandMethod(path = "cdump tp", permNode = "cdump.dump", requiredArgs = 1, helpMsg = "Usage: /cdump tp <id>")
+    @CommandMethod(path = "csearch tp", permNode = "csearch.csearch", requiredArgs = 1, helpMsg = "Usage: /csearch tp <id>")
     public void tpAndInspectChest(Player p, Integer chestIndex) {
         inspectChest(p, chestIndex, true);
     }
 
-    @CommandMethod(path = "cdump stop", permNode = "cdump.dump")
-    public void stopDump(Player p) {
-        if(dumpers.containsKey(p)) {
-            dumpers.remove(p).cancel();
-            p.sendMessage("Dump cancelled.");
+    @CommandMethod(path = "csearch stop", permNode = "csearch.csearch")
+    public void stopSearch(Player p) {
+        if(searchers.containsKey(p)) {
+            searchers.remove(p).cancel();
+            p.sendMessage("Search cancelled.");
         } else {
-            p.sendMessage("You're not currently running cdump.");
+            p.sendMessage("You're not currently running csearch.");
         }
     }
 
-    private void beginDump(Player p) {
-        if(dumpers.containsKey(p)) {
-            p.sendMessage("You're already running cdump. Use \"/cdump stop\" if you want to abort.");
+    private void beginSearch(Player p) {
+        if(searchers.containsKey(p)) {
+            p.sendMessage("You're already running csearch. Use \"/csearch stop\" if you want to abort.");
             return;
         }
 
@@ -91,19 +91,19 @@ public class ChestDumpCommandDefinition implements CommandDefinition {
             return;
         }
 
-        ChestDumpTask t = new ChestDumpTask(dumps, p, r.getWorld(), r.getArea(), r.iterator());
+        ChestSearchTask t = new ChestSearchTask(searches, p, r.getWorld(), r.getArea(), r.iterator());
         t.runTaskTimer(plugin, 0, 1);
-        dumpers.put(p, t);
+        searchers.put(p, t);
     }
 
     private void inspectChest(Player p, int chestIndex, boolean tp) {
         List<Location> chests;
         //lots of boring input validation below
         {
-            if(dumps.containsKey(p))
-                chests = dumps.get(p);
+            if(searches.containsKey(p))
+                chests = searches.get(p);
             else {
-                p.sendMessage("Error: No dump to inspect. Prepare a dump with /cdump start.");
+                p.sendMessage("Error: No search to inspect. Prepare a search with /csearch start.");
                 return;
             }
 
@@ -114,7 +114,7 @@ public class ChestDumpCommandDefinition implements CommandDefinition {
         }
 
         //now that we're finally done with all the boring stuff...
-        //...chest dumping time
+        //...chest searching time
         Location l = chests.get(chestIndex);
         Chest c = (Chest) l.getBlock().getState();
 
